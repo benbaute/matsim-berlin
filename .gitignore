@@ -3,9 +3,17 @@
 /RunGTFS2MATSimOpenBerlin/
 
 # Common files to ignore when working with matsim
-output/
+output/*
 scenarios/output
 test/output
+
+# Unignore some output
+!output/network/
+output/network/*
+!output/network/python/
+!output/network/python/**
+!output/network/qgis-output/
+!output/network/qgis-output/**
 
 *.gz
 *.pbf
