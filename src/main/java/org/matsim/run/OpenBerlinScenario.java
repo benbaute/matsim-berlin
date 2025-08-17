@@ -6,6 +6,9 @@ import org.matsim.analysis.QsimTimingModule;
 import org.matsim.analysis.personMoney.PersonMoneyEventsAnalysisModule;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.*;
 import org.matsim.application.MATSimApplication;
 import org.matsim.application.options.SampleOptions;
 import org.matsim.contrib.bicycle.BicycleConfigGroup;
@@ -34,7 +37,12 @@ import org.matsim.simwrapper.SimWrapperModule;
 import picocli.CommandLine;
 import playground.vsp.scoring.IncomeDependentUtilityOfMoneyPersonScoringParameters;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @CommandLine.Command(header = ":: Open Berlin Scenario ::", version = OpenBerlinScenario.VERSION, mixinStandardHelpOptions = true, showDefaultValues = true)
 public class OpenBerlinScenario extends MATSimApplication {
@@ -65,10 +73,69 @@ public class OpenBerlinScenario extends MATSimApplication {
 		MATSimApplication.run(OpenBerlinScenario.class, args);
 	}
 
+	/**
+	 * @param config Config, before anything is loaded to change as needed
+	 * Changes the input file of plans to load in desired plans file. This file depends on the size of the population.
+	 * It sets the last iteration of the run.
+	 * It sets the network file to include cycle-highways.
+	 * It adds bikes to the qsim to get output with bikes.
+	 */
+	private void adjustConfig(Config config) {
+		config.plans().setInputFile("berlin-v6.4-0.1pct.plans.xml");
+		config.controller().setLastIteration(10);
+		config.network().setInputFile("berlin-v6.4-network-with-pt-and-cycle-highways.xml");
+		Collection<String> mainModes = config.qsim().getMainModes();
+		mainModes.add("bike");
+		config.qsim().setMainModes(mainModes);
+	}
+
+	/**
+	 * @param scenario Scenario, which already loaded the network and plans file
+	 * This function adjusts the scenario on the fly. The input files are not affected.
+	 * It sets the speed on cycle highways in m/s and
+	 * Removes all routes which contain a bike mode. The reason for this is that those routes would no
+	 * longer work, as all bike links where changed. MATSim calculates new routes automatically.
+	 */
+	private void adjustScenario(Scenario scenario) {
+		double speedOnCycleHighways = 5.6; // 5.6 m/s -> 20.16 km/h
+		Network network = scenario.getNetwork();
+		for (Link link : network.getLinks().values()) {
+			if (link.getAttributes().getAttribute("bikeLinkType") == "cycleHighway") {
+				link.setFreespeed(speedOnCycleHighways);
+			}
+		}
+
+		Population population = scenario.getPopulation();
+		for (Person person : population.getPersons().values()) {
+			for (Plan plan : person.getPlans()) {
+				for (PlanElement pe : plan.getPlanElements()) {
+					if (pe instanceof Leg leg) {
+						if (leg.getMode().equals(TransportMode.bike)) {
+							leg.setRoute(null);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private static String getNextAvailableOutputDir(String basePath) {
+		int counter = 1;
+		File dir;
+		do {
+			String candidate = String.format("%s-%02d", basePath, counter);
+			dir = new File(candidate);
+			counter++;
+		} while (dir.exists());
+		return dir.getAbsolutePath();
+	}
+
 	@Override
 	protected Config prepareConfig(Config config) {
 
 		SimWrapperConfigGroup sw = ConfigUtils.addOrGetModule(config, SimWrapperConfigGroup.class);
+
+		adjustConfig(config);
 
 		if (sample.isSet()) {
 			double sampleSize = sample.getSample();
@@ -81,7 +148,8 @@ public class OpenBerlinScenario extends MATSimApplication {
 			sw.sampleSize = sampleSize;
 
 			config.controller().setRunId(sample.adjustName(config.controller().getRunId()));
-			config.controller().setOutputDirectory(sample.adjustName(config.controller().getOutputDirectory()));
+			String baseOutputDir = sample.adjustName(config.controller().getOutputDirectory());
+			config.controller().setOutputDirectory(getNextAvailableOutputDir(baseOutputDir));
 			config.plans().setInputFile(sample.adjustName(config.plans().getInputFile()));
 		}
 
@@ -149,6 +217,7 @@ public class OpenBerlinScenario extends MATSimApplication {
 		// add hbefa link attributes.
 		HbefaRoadTypeMapping roadTypeMapping = OsmHbefaMapping.build();
 		roadTypeMapping.addHbefaMappings(scenario.getNetwork());
+		adjustScenario(scenario);
 	}
 
 	@Override
