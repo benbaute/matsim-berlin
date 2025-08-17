@@ -1,0 +1,9 @@
+{
+"type": "FeatureCollection",
+"name": "new_matsim_nodes_self_intersections",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::25832" } },
+"features": [
+{ "type": "Feature", "properties": { "id": "RSV1-1_RSV1-2" }, "geometry": { "type": "Point", "coordinates": [ 803211.934842012822628, 5820596.101774728856981 ] } },
+{ "type": "Feature", "properties": { "id": "RSV4-1_RSV4-2" }, "geometry": { "type": "Point", "coordinates": [ 799298.452011589542963, 5833586.954549956135452 ] } }
+]
+}

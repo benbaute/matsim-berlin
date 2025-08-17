@@ -1,0 +1,13 @@
+{
+"type": "FeatureCollection",
+"name": "self-intersections",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::25832" } },
+"features": [
+{ "type": "Feature", "properties": { "id": "RSV3-1", "id_2": "RSV3-2" }, "geometry": { "type": "Point", "coordinates": [ 788957.410000000032596, 5823637.610000000335276 ] } },
+{ "type": "Feature", "properties": { "id": "RSV3-2", "id_2": "RSV3-1" }, "geometry": { "type": "Point", "coordinates": [ 788957.410000000032596, 5823637.610000000335276 ] } },
+{ "type": "Feature", "properties": { "id": "RSV1-1", "id_2": "RSV1-2" }, "geometry": { "type": "Point", "coordinates": [ 803211.934842012822628, 5820596.101774728856981 ] } },
+{ "type": "Feature", "properties": { "id": "RSV1-2", "id_2": "RSV1-1" }, "geometry": { "type": "Point", "coordinates": [ 803211.934842012822628, 5820596.101774728856981 ] } },
+{ "type": "Feature", "properties": { "id": "RSV4-1", "id_2": "RSV4-2" }, "geometry": { "type": "Point", "coordinates": [ 799298.452011589542963, 5833586.954549956135452 ] } },
+{ "type": "Feature", "properties": { "id": "RSV4-2", "id_2": "RSV4-1" }, "geometry": { "type": "Point", "coordinates": [ 799298.452011589542963, 5833586.954549956135452 ] } }
+]
+}
