@@ -100,7 +100,7 @@ public class OpenBerlinScenario extends MATSimApplication {
 		double speedOnCycleHighways = 5.6; // 5.6 m/s -> 20.16 km/h
 		Network network = scenario.getNetwork();
 		for (Link link : network.getLinks().values()) {
-			if (link.getAttributes().getAttribute("bikeLinkType") == "cycleHighway") {
+			if (link.getId().toString().startsWith("link_RSV")) {
 				link.setFreespeed(speedOnCycleHighways);
 			}
 		}
