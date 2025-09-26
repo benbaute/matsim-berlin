@@ -16,7 +16,7 @@ The step-by-step guide can be found in the [Python-repository](https://github.co
 
 The file [Berlin Scenario](src/main/java/org/matsim/run/OpenBerlinScenario.java) executes the scenario.
 It requires the adjusted network file with the cycle highways.
-This file can be [downloaded](https://tubcloud.tu-berlin.de/s/pjHerAx8pbtEqnb) or created by following
+This file can be [downloaded](https://tubcloud.tu-berlin.de/s/2FkQE9FsDWRmP5s) or created by following
 the directions in the [Python-repository](https://github.com/benbaute/matsim-berlin-analysis).
 In the file [Berlin Scenario](src/main/java/org/matsim/run/OpenBerlinScenario.java) the number of iterations, the chosen plans file, 
 and the speed on cycle highways can be adjusted accordingly for a new simulation. 
